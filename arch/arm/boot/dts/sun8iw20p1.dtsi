@@ -57,7 +57,7 @@
 	};
 
 	chosen {
-		bootargs = "earlyprintk=sunxi-uart,0x2500000 loglevel=8 initcall_debug=0 console=ttyS0 init=/init";
+       	bootargs = "earlyprintk=sunxi-uart,0x2500000 loglevel=8 initcall_debug=0 console=ttyS0 root=/dev/mmcblk0p5  init=/sbin/init partitions=ext4 cma=8M";
 		//bootargs = "loglevel=8 initcall_debug=0 console=ttyS0 init=/init";
 		linux,initrd-start = <0x0 0x0>;
 		linux,initrd-end = <0x0 0x0>;
@@ -172,28 +172,19 @@
 		opp@1008000000 {
 			opp-hz = /bits/ 64 <1008000000>;
 			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-microvolt-a0 = <1000000>;
+			opp-microvolt-a0 = <900000>;
 			opp-microvolt-a1 = <900000>;
 
-			opp-microvolt-b0 = <950000>;
+			opp-microvolt-b0 = <900000>;
 			opp-supported-hw = <0x3>;
 		};
 
-		opp@1104000000 {
-			opp-hz = /bits/ 64 <1104000000>;
-			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-microvolt-a0 = <1050000>;
-			opp-microvolt-a1 = <950000>;
-
-			opp-microvolt-b0 = <950000>;
-			opp-supported-hw = <0x3>;
-		};
 
 		opp@1200000000 {
 			opp-hz = /bits/ 64 <1200000000>;
 			clock-latency-ns = <244144>; /* 8 32k periods */
-			opp-microvolt-a0 = <1100000>;
-			opp-microvolt-a1 = <1000000>;
+			opp-microvolt-a0 = <900000>;
+			opp-microvolt-a1 = <900000>;
 
 			opp-supported-hw = <0x1>;
 		};
@@ -230,7 +221,7 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = <0x00000000 0x40000000 0x00000000 0x20000000>;
+		reg = <0x00000000 0x40000000 0x00000000 0x8000000>;
 	};
 
 	share_space0: share_space@42100000 {
@@ -535,6 +526,18 @@
 				drive-strength = <30>;
 				bias-disable;
 			};
+			
+			can0_pins_a: can0@0 {
+ 				pins = "PB2", "PB3";
+ 				function = "can0";
+                              drive-strength = <30>;
+			};
+
+			can1_pins_a: can1@0 {
+ 				pins = "PB4", "PB5";
+ 				function = "can1";
+                              drive-strength = <30>;
+			};
 
 			rgb24_pins_a: rgb24@0 {
 				pins = "PB2", "PB3", "PD0", "PD1", "PD2", "PD3", "PD4", "PD5", \
@@ -699,6 +702,34 @@
 			uart5_type = <2>;
 			status = "disabled";
 		};
+		
+		
+		can0: can@02504000 {
+			compatible = "allwinner,sun4i-a10-can";
+			device_type = "can0";
+			reg = <0x0 0x02504000 0x0 0x400>;
+			interrupts = <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-0 = <&can0_pins_a>;
+			pinctrl-names = "default";
+			clocks = <&ccu CLK_BUS_CAN0>;
+			clock-names = "can0";
+			resets = <&ccu RST_BUS_CAN0>;
+			status = "disabled";
+		};
+
+		can1: can@02504400 {
+			compatible = "allwinner,sun4i-a10-can";
+			device_type = "can1";
+			reg = <0x0 0x02504400 0x0 0x400>;
+			interrupts = <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-0 = <&can1_pins_a>;
+			pinctrl-names = "default";			
+			clocks = <&ccu CLK_BUS_CAN1>;
+			clock-names = "can1";
+			resets = <&ccu RST_BUS_CAN1>;
+			status = "disabled";
+		};
+		
 		cryptoengine: ce@03040000 {
 			compatible = "allwinner,sunxi-ce";
 			device_name = "ce";
@@ -747,16 +778,16 @@
 			pinctrl-1 = <&sdc2_pins_b>;
 			bus-width = <4>;
 			req-page-count = <2>;
-			cap-mmc-highspeed;
-			cap-cmd23;
-			mmc-cache-ctrl;
-			non-removable;
+		//	cap-mmc-highspeed;
+		//	cap-cmd23;
+		////	mmc-cache-ctrl;
+		//	non-removable;
 			/*max-frequency = <200000000>;*/
 			max-frequency = <50000000>;
-			cap-erase;
-			mmc-high-capacity-erase-size;
+		//	cap-erase;
+		//	mmc-high-capacity-erase-size;
 			no-sdio;
-			no-sd;
+			no-mmc;
 			/*-- speed mode --*/
 			/*sm0: DS26_SDR12*/
 			/*sm1: HSSDR52_SDR25*/
@@ -771,18 +802,18 @@
 			/*f4: CLK_150M*/
 			/*f5: CLK_200M*/
 
-			sdc_tm4_sm0_freq0 = <0>;
-			sdc_tm4_sm0_freq1 = <0>;
-			sdc_tm4_sm1_freq0 = <0x00000000>;
-			sdc_tm4_sm1_freq1 = <0>;
-			sdc_tm4_sm2_freq0 = <0x00000000>;
-			sdc_tm4_sm2_freq1 = <0>;
-			sdc_tm4_sm3_freq0 = <0x05000000>;
-			sdc_tm4_sm3_freq1 = <0x00000005>;
-			sdc_tm4_sm4_freq0 = <0x00050000>;
-			sdc_tm4_sm4_freq1 = <0x00000004>;
-			sdc_tm4_sm4_freq0_cmd = <0>;
-			sdc_tm4_sm4_freq1_cmd = <0>;
+			//sdc_tm4_sm0_freq0 = <0>;
+		//	sdc_tm4_sm0_freq1 = <0>;
+		//	sdc_tm4_sm1_freq0 = <0x00000000>;
+		//	sdc_tm4_sm1_freq1 = <0>;
+		//	sdc_tm4_sm2_freq0 = <0x00000000>;
+		//	sdc_tm4_sm2_freq1 = <0>;
+		//	sdc_tm4_sm3_freq0 = <0x05000000>;
+		//	sdc_tm4_sm3_freq1 = <0x00000005>;
+		//	sdc_tm4_sm4_freq0 = <0x00050000>;
+		//	sdc_tm4_sm4_freq1 = <0x00000004>;
+		//	sdc_tm4_sm4_freq0_cmd = <0>;
+		//	sdc_tm4_sm4_freq1_cmd = <0>;
 
 			/*vmmc-supply = <&reg_3p3v>;*/
 			/*vqmc-supply = <&reg_3p3v>;*/
@@ -1207,7 +1238,7 @@
 				pinctrl-1 = <&csi0_pins_b>;
 				device_id = <0>;
 				iommus = <&mmu_aw 1 1>;
-				status = "okay";
+				status = "disabled";
 			};
 			isp0: isp@5809410 {
 				compatible = "allwinner,sunxi-isp";
@@ -1284,7 +1315,7 @@
 				flash_handle = <&flash0>;
 				act_handle = <&actuator0>;
 				device_id = <0>;
-				status	= "okay";
+				status	= "disabled";
 			};
 			sensor1: sensor@5809480 {
 				reg = <0x0 0x05809480 0x0 0x10>;
@@ -1313,7 +1344,7 @@
 				flash_handle = <>;
 				act_handle = <>;
 				device_id = <1>;
-				status	= "okay";
+				status	= "disabled";
 			};
 			vinc0: vinc@5809000 {
 				compatible = "allwinner,sunxi-vin-core";

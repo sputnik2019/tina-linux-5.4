@@ -10,7 +10,7 @@ obj-$(CONFIG_CAN_SLCAN)		+= slcan.o
 obj-$(CONFIG_CAN_DEV)		+= can-dev.o
 can-dev-y			+= dev.o
 can-dev-y			+= rx-offload.o
-
+obj-y				+= sun4i_can.o
 can-dev-$(CONFIG_CAN_LEDS)	+= led.o
 
 obj-y				+= rcar/

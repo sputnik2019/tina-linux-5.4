@@ -19,7 +19,7 @@
 #endif
 
 #if !defined(SUNXI_UART_PBASE)
-#define SUNXI_UART_PBASE		CONFIG_DEBUG_UART_PHYS
+#define SUNXI_UART_PBASE		0x02500000
 #define SUNXI_UART_SIZE			UL(0x2000)
 #endif
 

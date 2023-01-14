@@ -18,6 +18,16 @@ CONFIG_XRADIO_VERBOSE_DEBUG = y
 CONFIG_XRADIO_DRIVER_API_TRACER = y
 CONFIG_MODULE_NAME = xr829
 
+ifndef CONFIG_MAC80211_RC_DEFAULT
+CONFIG_MAC80211_RC_DEFAULT = "minstrel_ht"
+DRV_FLAGS += $(call string_flag,CONFIG_MAC80211_RC_DEFAULT)
+endif
+
+ifndef CONFIG_MAC80211_RC_MINSTREL
+CONFIG_MAC80211_RC_MINSTREL = y
+DRV_FLAGS += $(call boolen_flag,CONFIG_MAC80211_RC_MINSTREL,y)
+endif
+
 define boolen_flag
 $(strip $(if $(findstring $($(1)),$(2)),-D$(1)))
 endef
