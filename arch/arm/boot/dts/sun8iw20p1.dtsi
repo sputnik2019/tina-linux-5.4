@@ -57,7 +57,7 @@
 	};
 
 	chosen {
-       	bootargs = "earlyprintk=sunxi-uart,0x2500000 loglevel=8 initcall_debug=0 console=ttyS0 root=/dev/mmcblk0p5  init=/sbin/init partitions=ext4 cma=8M";
+       	bootargs = "earlyprintk=sunxi-uart,0x2500000 loglevel=8 initcall_debug=0 console=ttyS0 root=/dev/mmcblk1p5  init=/sbin/init partitions=ext4 cma=8M";
 		//bootargs = "loglevel=8 initcall_debug=0 console=ttyS0 init=/init";
 		linux,initrd-start = <0x0 0x0>;
 		linux,initrd-end = <0x0 0x0>;
@@ -778,16 +778,16 @@
 			pinctrl-1 = <&sdc2_pins_b>;
 			bus-width = <4>;
 			req-page-count = <2>;
-		//	cap-mmc-highspeed;
-		//	cap-cmd23;
-		////	mmc-cache-ctrl;
-		//	non-removable;
+			cap-mmc-highspeed;
+			cap-cmd23;
+			mmc-cache-ctrl;
+			non-removable;
 			/*max-frequency = <200000000>;*/
 			max-frequency = <50000000>;
-		//	cap-erase;
-		//	mmc-high-capacity-erase-size;
+			cap-erase;
+			mmc-high-capacity-erase-size;
 			no-sdio;
-			no-mmc;
+			no-sd;
 			/*-- speed mode --*/
 			/*sm0: DS26_SDR12*/
 			/*sm1: HSSDR52_SDR25*/
@@ -802,18 +802,18 @@
 			/*f4: CLK_150M*/
 			/*f5: CLK_200M*/
 
-			//sdc_tm4_sm0_freq0 = <0>;
-		//	sdc_tm4_sm0_freq1 = <0>;
-		//	sdc_tm4_sm1_freq0 = <0x00000000>;
-		//	sdc_tm4_sm1_freq1 = <0>;
-		//	sdc_tm4_sm2_freq0 = <0x00000000>;
-		//	sdc_tm4_sm2_freq1 = <0>;
-		//	sdc_tm4_sm3_freq0 = <0x05000000>;
-		//	sdc_tm4_sm3_freq1 = <0x00000005>;
-		//	sdc_tm4_sm4_freq0 = <0x00050000>;
-		//	sdc_tm4_sm4_freq1 = <0x00000004>;
-		//	sdc_tm4_sm4_freq0_cmd = <0>;
-		//	sdc_tm4_sm4_freq1_cmd = <0>;
+			sdc_tm4_sm0_freq0 = <0>;
+			sdc_tm4_sm0_freq1 = <0>;
+			sdc_tm4_sm1_freq0 = <0x00000000>;
+			sdc_tm4_sm1_freq1 = <0>;
+			sdc_tm4_sm2_freq0 = <0x00000000>;
+			sdc_tm4_sm2_freq1 = <0>;
+			sdc_tm4_sm3_freq0 = <0x05000000>;
+			sdc_tm4_sm3_freq1 = <0x00000005>;
+			sdc_tm4_sm4_freq0 = <0x00050000>;
+			sdc_tm4_sm4_freq1 = <0x00000004>;
+			sdc_tm4_sm4_freq0_cmd = <0>;
+			sdc_tm4_sm4_freq1_cmd = <0>;
 
 			/*vmmc-supply = <&reg_3p3v>;*/
 			/*vqmc-supply = <&reg_3p3v>;*/

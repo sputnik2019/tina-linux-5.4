@@ -32,8 +32,8 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		regulator-enable-ramp-delay = <1000>;
-		gpio = <&pio PB 10 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
+		gpio = <&pio PE 1 GPIO_ACTIVE_LOW>;
+		enable-active-low;
 	};
 };
 
@@ -207,32 +207,37 @@
         };
 
 	twi3_pins_a: twi3@0 {
-		pins = "PE6", "PE7";
+		pins = "PB6", "PB7";
 		function = "twi3";
 		drive-strength = <10>;
 	};
 
 	twi3_pins_b: twi3@1 {
-		pins = "PE6", "PE7";
+		pins = "PB6", "PB7";
 		function = "gpio_in";
 	};
 
-	gmac_pins_a: gmac@0 {
-		pins = "PE0", "PE1", "PE2", "PE3",
-		       "PE4", "PE5", "PE6", "PE7",
-		       "PE8", "PE9", "PE10", "PE11",
-		       "PE12", "PE13", "PE14", "PE15";
-		function = "gmac0";
-		drive-strength = <10>;
-	};
-
-	gmac_pins_b: gmac@1 {
-		pins = "PE0", "PE1", "PE2", "PE3",
-		       "PE4", "PE5", "PE6", "PE7",
-		       "PE8", "PE9", "PE10", "PE11",
-		       "PE12", "PE13", "PE14", "PE15";
-		function = "gpio_in";
-	};
+        gmac0_pins_c: gmac@1 {
+                allwinner,pins = "PG0", "PG1", "PG2", "PG3", "PG4",
+                                 "PG5", "PG10", "PG11","PG12", "PG13",
+                                 "PG14", "PG15";
+                allwinner,function = "gmac0";
+                allwinner,muxsel = <4>;
+                allwinner,drive = <3>;
+                allwinner,pull = <1>;
+        };
+        
+        gmac0_pins_d: gmac@1 {
+                allwinner,pins = "PG0", "PG1", "PG2", "PG3", "PG4",
+                                 "PG5", "PG10", "PG11","PG12", "PG13",
+                                  "PG14", "PG15";
+                // allwinner,function = "io_disabled";
+                // bias-disable;
+                allwinner,function = "gmac0";
+                allwinner,muxsel = <4>;
+                allwinner,drive = <3>;
+                allwinner,pull = <1>;
+        };
 
 	dmic_pins_a: dmic@0 {
 		/* DMIC_PIN: CLK, DATA0, DATA1, DATA2, DATA3*/
@@ -576,15 +581,15 @@ status = "okay";
 		type_addr_wifi = <0x0>;
 		type_addr_bt   = <0x0>;
 		type_addr_eth  = <0x0>;
-		status         = "okay";
+		status         = "disabled";
 	};
 };
 
 &sdc2 {
 	non-removable;
 	bus-width = <4>;
-	mmc-ddr-1_8v;
-	mmc-hs200-1_8v;
+	/*mmc-ddr-1_8v;*/
+	/*mmc-hs200-1_8v;*/
 	no-sdio;
 	no-sd;
 	ctl-spec-caps = <0x308>;
@@ -592,20 +597,20 @@ status = "okay";
 	sunxi-power-save-mode;
 	sunxi-dis-signal-vol-sw;
 	mmc-bootpart-noacc;
-	max-frequency = <150000000>;
+	max-frequency = <50000000>;
 	/*vmmc-supply = <&reg_dcdc1>;*/
 	/*emmc io vol 3.3v*/
 	/*vqmmc-supply = <&reg_aldo1>;*/
 	/*emmc io vol 1.8v*/
 	/*vqmmc-supply = <&reg_eldo1>;*/
-	status = "disabled";
+	status = "okay";
 };
 
 &sdc0 {
 	bus-width = <4>;
 	cd-gpios = <&pio PF 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; /* mangopi */
 	/*non-removable;*/
-	/*broken-cd;*/
+	broken-cd;
 	/*cd-inverted;*/
 	/*data3-detect;*/
 	/*card-pwr-gpios = <&pio PH 14 1 1 2 0xffffffff>;*/
@@ -645,9 +650,8 @@ status = "okay";
 	ignore-pm-notify;
 	max-frequency = <150000000>;
 	ctl-spec-caps = <0x8>;
-	status = "okay";
+	status = "disabled";
 };
-
 
 /*
 tvd configuration
@@ -955,7 +959,7 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
 	pinctrl-names = "default", "sleep";
 	dmas = <&dma 45>, <&dma 45>;
 	dma-names = "tx", "rx";
-	status = "okay";
+	status = "disabled";
 
 	/* pcf8574-usage:
 	 * only use gpio0~7, 0 means PP0.
@@ -1004,19 +1008,25 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
 	pinctrl-0 = <&twi3_pins_a>;
 	pinctrl-1 = <&twi3_pins_b>;
 	pinctrl-names = "default", "sleep";
-	status = "disabled";
+	status = "okay";
+	
+	 rtc@51 {
+        // compatible = "allwinner,rtc-hym8563";
+        compatible = "haoyu,hym8563";
+        reg = <0x51>;
+    };
 };
 
 &gmac0 {
-	phy-mode = "rgmii";
+	pinctrl-0 = <&gmac0_pins_c>;
+	pinctrl-1 = <&gmac0_pins_d>;
+        pinctrl-names = "default", "sleep";
+	phy-mode = "rmii";
 	use_ephy25m = <1>;
-	pinctrl-0 = <&gmac_pins_a>;
-	pinctrl-1 = <&gmac_pins_b>;
-	pinctrl-names = "default", "sleep";
-	phy-rst = <&pio PE 16 GPIO_ACTIVE_HIGH>;
-	tx-delay = <3>; /*2~4*/
-	rx-delay = <0>;
-	status = "disabled";
+	tx-delay = <7>;
+	rx-delay = <31>;
+	phy-rst = <&pio PG 9 GPIO_ACTIVE_HIGH>; 
+	status = "okay";
 };
 
 &spi0 {
@@ -1027,8 +1037,8 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
 	/*spi-supply = <&reg_dcdc1>;*/
 	spi_slave_mode = <0>;
 	spi0_cs_number = <1>;
-    spi0_cs_bitmap = <1>;
-	status = "okay";
+        spi0_cs_bitmap = <1>;
+	status = "disabled";
 
 	spi-nand@0 {
 		compatible = "spi-nand";
